@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+//import bootstrap.min.css that is extracted from Lux theme 
+// Theme downloaded from bootswatch.com and copied locally
+import './bootstrap.min.css'
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
