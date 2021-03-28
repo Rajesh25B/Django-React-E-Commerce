@@ -1,11 +1,11 @@
 import React from 'react'
-import { Navbar, Nav, Container, Row } from 'react-bootstrap'
+import { Navbar, Nav, Container } from 'react-bootstrap'
 
 function Header() {
     return (
         <header>
             <Navbar bg="dark" variant="dark" expand="lg" collapseOnSelect>
-                {/* containerise the navbar that is copied from react-bootstrap */}
+                
                 <Container>
                 <Navbar.Brand href="/">ShopStore</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
