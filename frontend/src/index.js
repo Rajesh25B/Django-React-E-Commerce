@@ -1,5 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux'
+import store from './store'
+
 import './index.css';
 //import bootstrap.min.css that is extracted from Lux theme 
 // Theme downloaded from bootswatch.com and copied locally
@@ -7,10 +10,11 @@ import './bootstrap.min.css'
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+
 ReactDOM.render(
-  <React.StrictMode>
+  <Provider store={store}>
     <App />
-  </React.StrictMode>,
+  </Provider>,
   document.getElementById('root')
 );
 
