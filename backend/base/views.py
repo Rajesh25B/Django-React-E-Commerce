@@ -10,6 +10,25 @@ from .products import products
 from .serializers import ProductSerializer
 # Create your views here.
 
+# simpleJWT imports
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    '''Serializer to obtain the username and email from the token'''
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        refresh = self.get_token(self.user)
+
+        data['username'] = self.user.username
+        data['email'] = self.user.email
+
+        return data
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
 @api_view(['GET'])
 def getRoutes(request):
     '''this view tells us what routes we have 
