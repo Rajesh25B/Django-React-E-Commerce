@@ -1,6 +1,5 @@
 # django & DRF imports
 from django.shortcuts import render
-from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -8,16 +7,16 @@ from django.contrib.auth.hashers import make_password
 from rest_framework import status
 
 # local imports
-from .models import Product
+from base.models import Product
 from django.contrib.auth.models import User
-from .products import products
-from .serializers import ProductSerializer, UserSerializer, UserSerializerWithToken
+from base.serializers import ProductSerializer, UserSerializer, UserSerializerWithToken
 
 # simpleJWT imports
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 # Create your views here.
+
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     '''Serializer to obtain the username and email from the token'''
@@ -34,12 +33,13 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         return data
 
+
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
-
 @api_view(['POST'])
 def registerUser(request):
+
     data = request.data
 
     try:
@@ -52,6 +52,7 @@ def registerUser(request):
         
         serializer = UserSerializerWithToken(user, many=False)
         return Response(serializer.data)
+
     except:
         message = {'detail': 'User with this email already exist'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
@@ -68,17 +69,4 @@ def getUserProfile(request): # returns the user
 def getUsers(request): # returns all users only for admin user
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
-    return Response(serializer.data)
-
-@api_view(['GET'])
-def getProducts(request): # returns all products from Product model
-    products = Product.objects.all()
-    serializer = ProductSerializer(products, many=True)
-    return Response(serializer.data)
-
-
-@api_view(['GET'])
-def getProduct(request, pk): # returns single product from all products
-    product = Product.objects.get(_id=pk)
-    serializer = ProductSerializer(product, many=False)        
     return Response(serializer.data)
