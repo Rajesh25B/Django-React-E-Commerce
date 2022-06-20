@@ -21,45 +21,43 @@ def addOrderItems(request):
 
     if orderItems and len(orderItems) == 0:
         return Response({'detail': 'No Order Items'}, status=status.HTTP_400_BAD_REQUEST)
-    else:
+    
+    # (1) Create order
+    order = Order.objects.create(
+        user= user,
+        paymentMethod= data['paymentMethod'],
+        taxPrice= data['taxPrice'],
+        shippingPrice= data['shippingPrice'],
+        totalPrice= data['totalPrice']
+    )
 
-        # (1) Create order
+    # (2) Create shipping address
 
-        order = Order.objects.create(
-            user= user,
-            paymentMethod= data['paymentMethod'],
-            taxPrice= data['taxPrice'],
-            shippingPrice= data['shippingPrice'],
-            totalPrice= data['totalPrice']
-        )
+    shipping = ShippingAddress.objects.create(
+        order=order,
+        address=data['shippingAddress']['address'],
+        city=data['shippingAddress']['city'],
+        postalCode=data['shippingAddress']['postalCode'],
+        country=data['shippingAddress']['country'],
+    )
 
-        # (2) Create shipping address
+    # (3) Create order items adn set order to orderItem relationship
+    for i in orderItems:
+        product = Product.objects.get(_id=i['product'])
 
-        shipping = ShippingAddress.objects.create(
+        item = OrderItem.objects.create(
+            product=product,
             order=order,
-            address=data['shippingAddress']['address'],
-            city=data['shippingAddress']['city'],
-            postalCode=data['shippingAddress']['postalCode'],
-            country=data['shippingAddress']['country'],
+            name=product.name,
+            qty=i['qty'],
+            price=i['price'],
+            image=product.image.url,
         )
 
-        # (3) Create order items adn set order to orderItem relationship
-        for i in orderItems:
-            product = Product.objects.get(_id=i['product'])
+        # (4) Update stock
 
-            item = OrderItem.objects.create(
-                product=product,
-                order=order,
-                name=product.name,
-                qty=i['qty'],
-                price=i['price'],
-                image=product.image.url,
-            )
-
-            # (4) Update stock
-
-            product.countInStock -= item.qty
-            product.save()
+        product.countInStock -= item.qty
+        product.save()
 
         serializer = OrderSerializer(order, many=False)
         return Response(serializer.data)
